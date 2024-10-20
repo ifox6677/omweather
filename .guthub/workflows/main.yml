@@ -1,0 +1,39 @@
+name: build
+
+# 触发条件为手动触发 (workflow_dispatch)
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4  # 更新到v4
+
+    - name: Setup JDK 17
+      uses: actions/setup-java@v3  # 更新到v3
+      with:
+        java-version: 17
+        distribution: 'temurin'  # 指定JDK发行版，使用Temurin
+
+    - name: Build with Gradle
+      run: ./gradlew assembleDebug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4  # 更新到v4
+      with:
+        name: 天气.apk  # 将输出的文件名改为“天气”
+        path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Create release
+      uses: marvinpinto/action-automatic-releases@latest
+      if: github.ref == 'refs/heads/master'
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: ${{ github.sha }}
+        files: |
+          app/build/outputs/apk/debug/app-debug.apk
