@@ -125,4 +125,5 @@
 <string name="settings_apparent_temperature">显示“体感”温度</string>
 <string name="github" translatable="false">GitHub</string>
 <string name="units_hours">小时</string>
+<string name="settings_widget_transparency">小部件透明度</string>
 </resources>
