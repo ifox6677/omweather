@@ -10,22 +10,31 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v4  # 更新到v4
+      uses: actions/checkout@v4  # 使用最新版本
 
     - name: Setup JDK 17
-      uses: actions/setup-java@v3  # 更新到v3
+      uses: actions/setup-java@v3  # 使用最新版本
       with:
         java-version: 17
-        distribution: 'temurin'  # 指定JDK发行版，使用Temurin
+        distribution: 'temurin'  # 使用Temurin JDK发行版
 
     - name: Build with Gradle
       run: ./gradlew assembleDebug
 
+    - name: Verify APK exists
+      run: |
+        if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+          echo "APK file exists."
+        else
+          echo "APK file does not exist."
+          exit 1
+        fi
+
     - name: Upload APK
-      uses: actions/upload-artifact@v4  # 更新到v4
+      uses: actions/upload-artifact@v4  # 使用最新版本
       with:
-        name: 天气.apk  # 将输出的文件名改为“天气”
-        path: app/build/outputs/apk/debug/app-debug.apk
+        name: weather.apk  # 将输出的文件名改为“天气”
+        path: app/build/outputs/apk/debug/app-debug.apk  # 确保路径正确
 
     - name: Create release
       uses: marvinpinto/action-automatic-releases@latest
@@ -37,3 +46,4 @@ jobs:
         title: ${{ github.sha }}
         files: |
           app/build/outputs/apk/debug/app-debug.apk
+        rscd: 'attachment; filename=%E5%A4%A9%E6%B0%94.apk.zip'  # URL 编码的文件名
